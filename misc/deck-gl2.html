@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <!-- deck.gl standalone bundle -->
+    <!-- <script src="https://unpkg.com/deck.gl@^8.7.0-beta.6/dist.min.js"></script> -->
+    <script src="https://unpkg.com/deck.gl@^8.0.0/dist.min.js"></script>
+
+    <!-- <script src="https://unpkg.com/@deck.gl/core@^8.0.0/dist.min.js"></script>
+    <script src="https://unpkg.com/@deck.gl/layers@^8.0.0/dist.min.js"></script>
+    <script src="https://unpkg.com/@deck.gl/aggregation-layers@^8.0.0/dist.min.js"></script> -->
+
+    <!-- Google Maps dependencies -->
+    <script
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCU-SCtr4kQc3yZgC2rRQbtwtZFYanfo98&callback=initMap"
+    ></script>
+
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #container {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container"></div>
+  </body>
+
+  <script type="text/javascript">
+    window.initMap = () => {
+      const RSCP_DATA = "./covmo.json";
+
+      const map = new google.maps.Map(document.getElementById("container"), {
+        center: { lat: -3.697249, lng: 104.849911 },
+        zoom: 9,
+      });
+
+      // const drawingManager = new google.maps.drawing.DrawingManager({
+      //   drawingMode: google.maps.drawing.OverlayType.MARKER,
+      //   drawingControl: true,
+      //   drawingControlOptions: {
+      //     position: google.maps.ControlPosition.TOP_CENTER,
+      //     drawingModes: [
+      //       google.maps.drawing.OverlayType.MARKER,
+      //       google.maps.drawing.OverlayType.CIRCLE,
+      //       google.maps.drawing.OverlayType.POLYGON,
+      //       google.maps.drawing.OverlayType.POLYLINE,
+      //       google.maps.drawing.OverlayType.RECTANGLE,
+      //     ],
+      //   },
+      //   markerOptions: {
+      //     icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+      //   },
+      //   circleOptions: {
+      //     fillColor: "#ffff00",
+      //     fillOpacity: 1,
+      //     strokeWeight: 5,
+      //     clickable: false,
+      //     editable: true,
+      //     zIndex: 1,
+      //   },
+      // });
+
+      // drawingManager.setMap(map);
+
+      const deckOverlay = new deck.GoogleMapsOverlay({
+        layers: [
+          new deck.GPUGridLayer({
+            id: "rscp-grid",
+            data: RSCP_DATA,
+
+            // Styles
+            // filled: true,
+            // pickable: true,
+            // extruded: true,
+            cellSize: 10000,
+            // elevationScale: 4,
+            getPosition: (d) => [d.LONGITUDE, d.LATITUDE],
+            getColorWeight: (d) => -1 * (d.START_RSRP + 90),
+            // onClick: info => info.object && alert(`${info.object.properties.name} (${info.object.properties.abbrev})`)
+          }),
+
+          //  new deck.HeatmapLayer({
+          //         id: 'heat',
+          //         data: RSCP_DATA,
+          //         getPosition: d => [d.LONGITUDE, d.LATITUDE],
+          //         // getWeight: d => d.n_killed + (d.n_injured * 0.5),
+          //         radiusPixels: 60,
+          //   })
+        ],
+      });
+
+      deckOverlay.setMap(map);
+    };
+  </script>
+</html>

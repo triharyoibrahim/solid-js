@@ -1,0 +1,3 @@
+cara me-wrap deck.gl:
+- pakai store untuk layers di GoogleMapsOverlay
+- reactive dari layers ini yang akan me-render map
